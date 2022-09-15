@@ -1,0 +1,21 @@
+{
+  "name": "projetoDropBox",
+  "version": "1.0.0",
+  "description": " [EM DESENVOLVIMENTO] Projeto clone do DropBox desenvolvido durante o curso de javascript da HCode disponível na Udemy.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hcodebr/curso-javascript-projeto-dropbox-clone.git"
+  },
+  "author": "Edson Mota Valença Filho <emvalenca.dev@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^4.1.0",
+    "bower": "^1.8.14",
+    "express-generator": "^4.16.1",
+    "ionicons": "^2.0.1"
+  }
+}
