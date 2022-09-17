@@ -3,6 +3,7 @@ import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.9.
 import { db } from "../database/connect.db.js"
 
 
+
 class DropboxController{
 
     constructor(view, service){
@@ -18,6 +19,12 @@ class DropboxController{
 //inicia os eventos DOM
 
     initEvents(){
+
+        this.view.listFilesEl.addEventListener('selectionchange', e => {
+
+            this.view.showMenuOrgOptions()
+
+        })
 
         this.view.btnSendFileEl.addEventListener('click', evt =>{
 

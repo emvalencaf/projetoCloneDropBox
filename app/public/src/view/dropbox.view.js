@@ -4,13 +4,31 @@ import { SvgView } from "./svg.view.js"
 
 class DropboxView{
 
+    //enviar arquivos DOM
     btnSendFileEl = document.querySelector('#btn-send-file')
     inputFilesEl = document.querySelector('#files')
+
+    
+    //barra de progresso DOM
     snackModalEl = document.querySelector('#react-snackbar-root')
     progressBarEl = this.snackModalEl.querySelector(".mc-progress-bar-fg")
     nameFileEl = this.snackModalEl.querySelector(".filename")
     timeleftEl = this.snackModalEl.querySelector('.timeleft')
+
+    // li DOM
     listFilesEl = document.querySelector("#list-of-files-and-directories")
+    onSelectionChange = new Event('selectionchange')
+
+    //btns de organização
+    btnNewFolder = document.querySelector('#btn-new-folder')
+    btnRename = document.querySelector('#btn-rename')
+    btnDelete = document.querySelector('#btn-delete')
+    
+    constructor(){
+
+        this.btnRename.style.display = 'none'
+        this.btnDelete.style.display = 'none'
+    }
 
 //renderizam no front-end o progresso da barra de upload dos arquivos
     modalShow(show = true){
@@ -116,35 +134,40 @@ class DropboxView{
 
     initEventsLi(li){
 
+
+
         li.addEventListener('click', e=>{
 
+            
             if(e.shiftKey) {
-
+                
                 let firstLi = this.listFilesEl.querySelector('.selected')
 
                 if(firstLi) {
-
+                    
                     let indexStart
                     let indexEnd
 
                     const lis = [...li.parentElement.childNodes]
-
+                    
                     lis.forEach((el, i) => {
-
+                        
                         if(el === firstLi) indexStart = i
-
+                        
                         if(li === el) indexEnd = i
-
-
+                        
+                        
                     })
-
+                    
                     let index = [indexStart, indexEnd].sort()
-
+                    
                     lis.forEach((el, i) => {
-
+                        
                         if(i >= index[0] && i <= index[1]) el.classList.add('selected')
-
+                        
                     })
+                    
+                    this.listFilesEl.dispatchEvent(this.onSelectionChange)
 
                     return
                 }
@@ -158,10 +181,39 @@ class DropboxView{
                 })
 
             li.classList.toggle('selected')
-
+            
+            this.listFilesEl.dispatchEvent(this.onSelectionChange)
         })
 
     }
+    
+    getSelection(){
+        return this.listFilesEl.querySelectorAll('.selected')
+    }
+
+//Eventos DOM organização
+
+    showMenuOrgOptions(){
+        
+        switch(this.getSelection().length){
+        
+            case 0:
+                this.btnDelete.style.display = 'none'
+                this.btnRename.style.display = 'none'
+                break
+            case 1:
+                this.btnDelete.style.display = 'block'
+                this.btnRename.style.display = "block"
+                break
+            default:
+                this.btnRename.style.display = "none"
+                this.btnDelete.style.display = "block"
+                break
+        
+        }
+
+    }
+
 }
 
 export const dropboxView = new DropboxView()
