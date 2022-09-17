@@ -106,6 +106,7 @@ class DropboxView{
         const li = document.createElement('li')
 
         li.dataset.key = key
+        li.dataset.file = JSON.stringify(file)
 
         li.innerHTML = `
             ${this.getFilesIconView(file)}

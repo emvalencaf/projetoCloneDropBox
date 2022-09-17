@@ -1,5 +1,5 @@
 import { dropboxView } from "../view/dropbox.view.js"
-import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
+import { ref, set, push, onValue, child, remove } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
 import { db } from "../database/connect.db.js"
 
 
@@ -19,6 +19,40 @@ class DropboxController{
 //inicia os eventos DOM
 
     initEvents(){
+
+        this.view.btnDelete.addEventListener('click', e => {
+
+            this.removeTasks()
+                .then(responses=> {
+
+                    responses.forEach(response => {
+
+                        if(response.fields.key) remove(child(this.getFirebaseRef(), response.fields.key)) 
+
+                    })
+
+                })
+                .catch(err => {
+
+                    console.error(err)
+
+                })
+
+        })
+
+        this.view.btnRename.addEventListener('click', e => {
+
+            let li = this.view.getSelection()[0]
+            let file = JSON.parse(li.dataset.file)
+
+            let name = prompt("Renomear o arquivo:", file.originalFilename)
+
+            if(!name) return
+
+            file.originalFilename = name
+
+            set(child(this.getFirebaseRef(), li.dataset.key), file)
+        })
 
         this.view.listFilesEl.addEventListener('selectionchange', e => {
 
@@ -68,6 +102,46 @@ class DropboxController{
 
     }
 
+//Método para realizar o ajax
+
+    ajax(url, method = 'GET', formData = new FormData(), onprogress = () => {}, onloadstart = () => {}){
+
+        return new Promise( (resolve, reject) =>{
+
+            let ajax = new XMLHttpRequest()
+    
+            ajax.open(method.toUpperCase(), url)
+    
+            ajax.onload = evt => {
+    
+                try{
+    
+                    resolve(JSON.parse(ajax.responseText))
+    
+                }catch(e){
+    
+                    reject(e)
+    
+                }
+    
+            }
+            
+            ajax.error = evt => {
+
+                reject(evt)
+                
+            }
+
+            ajax.upload.onprogress = onprogress
+    
+            onloadstart()
+    
+            ajax.send(formData)
+
+        })
+
+    }
+
 //Carrega na máquina (na pasta upload) o arquivo enviado ao front-end e faz o registro dos dados do arquivo no realtime database do firebase
 
     uploadTask(files){
@@ -77,46 +151,56 @@ class DropboxController{
         
         files.forEach(file =>{
 
-            promises.push(new Promise((resolve, reject) => {
+            let formData = new FormData()
+            
+            formData.append('input-file', file)
 
-                let ajax = new XMLHttpRequest()
+            let promise = this.ajax('/upload',
+            'POST',
+            formData,
+            (evt) => {
 
-                ajax.open('POST', '/upload')
-
-                ajax.onload = evt => {
-
-                    try{
-
-                        resolve(JSON.parse(ajax.responseText))
-
-                    }catch(e){
-
-                        reject(e)
-
-                    }
-
-                }
-
-                ajax.upload.onprogress = evt =>{
-
-                    this.uploadProgress(evt, file)
-
-                }
-
-                let formData = new FormData()
-
-                formData.append('input-file', file)
+                this.uploadProgress(evt, file)
+            
+            },
+            () => {
 
                 this.startUploadTime = Date.now()
 
-                ajax.send(formData)
+            })
 
-            }))
+            promises.push(promise)
 
         })
 
         return Promise.all(promises)
     }
+
+//Remove do banco de dados e do sistema o arquivo
+
+    removeTasks(){
+
+        let promises = []
+
+        console.log("dentro do removeTasks")
+
+        this.view.getSelection().forEach(li => {
+
+            console.log(li)
+
+            let file = JSON.parse(li.dataset.file)
+            let key = li.dataset.key
+
+            let formData = new FormData()
+            formData.append('path', file.filepath)
+            formData.append('key', key)
+
+            promises.push(this.ajax('/file','DELETE', formData))
+        })
+        
+        return Promise.all(promises)
+    }
+
 
 //Dispara as funções relacionadas a barra de carregamento
     uploadProgress(evt, file){
@@ -145,9 +229,6 @@ class DropboxController{
 
                 let key = snapshotItem.key
                 let data = snapshotItem.val()
-
-                console.log(key)
-                console.log(data)
 
                 this.view.readFiles(data, key)
             })
