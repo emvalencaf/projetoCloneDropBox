@@ -1,3 +1,4 @@
+
 import { FormatTime } from "../utils/formatTime.utils.js"
 import { SvgView } from "./svg.view.js"
 
@@ -9,10 +10,20 @@ class DropboxView{
     progressBarEl = this.snackModalEl.querySelector(".mc-progress-bar-fg")
     nameFileEl = this.snackModalEl.querySelector(".filename")
     timeleftEl = this.snackModalEl.querySelector('.timeleft')
+    listFilesEl = document.querySelector("#list-of-files-and-directories")
 
+//renderizam no front-end o progresso da barra de upload dos arquivos
     modalShow(show = true){
 
         this.snackModalEl.getElementsByClassName.display = (show)? "block":"none"
+
+    }
+
+    uploadComplete(){
+
+        this.modalShow(false)
+        this.inputFilesEl.value = ''
+        this.btnSendFileEl.disabled = false
 
     }
 
@@ -40,9 +51,11 @@ class DropboxView{
 
     }
 
+//renderizam no front-end a representação dos arquivos registrados no realtime database
+
     getFilesIconView(file){
 
-        switch(file.type){
+        switch(file.mimetype){
             case 'folder':
                 return SvgView.getHTMLFolder()
                 break
@@ -70,16 +83,85 @@ class DropboxView{
 
     }
 
-    getFileView(file){
+    getFileView(file, key){
 
-        return `
-            ${this.getFileIconView(file)}
-            <div class="name text-center">${file.name}
+        const li = document.createElement('li')
+
+        li.dataset.key = key
+
+        li.innerHTML = `
+            ${this.getFilesIconView(file)}
+            <div class="name text-center">${file.originalFilename}
             </div>
         ` 
 
+        this.initEventsLi(li)
+
+        return li
+
     }
 
+    clearListOfFilesAndDiretories(){
+        this.listFilesEl.innerHTML = ''
+    }
+
+
+
+    readFiles(file, key){
+
+        this.listFilesEl.appendChild(this.getFileView(file, key))
+    }
+
+//Eventos DOM relacionados à aplicação de estilo ao click das <li> que representam os arquivos na máquina e database do firebase
+
+    initEventsLi(li){
+
+        li.addEventListener('click', e=>{
+
+            if(e.shiftKey) {
+
+                let firstLi = this.listFilesEl.querySelector('.selected')
+
+                if(firstLi) {
+
+                    let indexStart
+                    let indexEnd
+
+                    const lis = [...li.parentElement.childNodes]
+
+                    lis.forEach((el, i) => {
+
+                        if(el === firstLi) indexStart = i
+
+                        if(li === el) indexEnd = i
+
+
+                    })
+
+                    let index = [indexStart, indexEnd].sort()
+
+                    lis.forEach((el, i) => {
+
+                        if(i >= index[0] && i <= index[1]) el.classList.add('selected')
+
+                    })
+
+                    return
+                }
+
+            }
+
+            if(!e.ctrlKey) this.listFilesEl.querySelectorAll("li.selected").forEach( el =>{
+
+                    el.classList.remove('selected')
+
+                })
+
+            li.classList.toggle('selected')
+
+        })
+
+    }
 }
 
 export const dropboxView = new DropboxView()

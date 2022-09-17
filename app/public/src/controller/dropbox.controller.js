@@ -1,5 +1,5 @@
 import { dropboxView } from "../view/dropbox.view.js"
-import { ref, set, push } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
+import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
 import { db } from "../database/connect.db.js"
 
 
@@ -11,8 +11,11 @@ class DropboxController{
         this.service = service
 
         this.initEvents()
+        this.readFiles()
 
     }
+
+//inicia os eventos DOM
 
     initEvents(){
 
@@ -24,6 +27,8 @@ class DropboxController{
 
         this.view.inputFilesEl.addEventListener("change", evt =>{
 
+            this.view.btnSendFileEl.disabled = true
+
             this.uploadTask(evt.target.files)
                 .then(responses => {
 
@@ -33,21 +38,30 @@ class DropboxController{
 
                     })
 
-                    this.view.modalShow(false)
+                    this.view.uploadComplete()
+
+                })
+                .catch(err => {
+
+                    this.view.uploadComplete()
+                    console.error(err)
 
                 })
 
-                this.view.modalShow()
-                this.view.inputFilesEl.value = ""
+            this.view.modalShow()
         })
 
     }
+
+//pega a referência do realtime database do firebase
 
     getFirebaseRef(){
 
         return ref(db, 'files')
 
     }
+
+//Carrega na máquina (na pasta upload) o arquivo enviado ao front-end e faz o registro dos dados do arquivo no realtime database do firebase
 
     uploadTask(files){
 
@@ -97,6 +111,7 @@ class DropboxController{
         return Promise.all(promises)
     }
 
+//Dispara as funções relacionadas a barra de carregamento
     uploadProgress(evt, file){
 
         let timespent = Date.now() - this.startUploadTime
@@ -109,6 +124,28 @@ class DropboxController{
             filename: file.name,
             timeleft,
             porcent
+        })
+
+    }
+
+    readFiles(){
+
+        onValue(this.getFirebaseRef(), snapshot => {
+
+            this.view.clearListOfFilesAndDiretories()
+
+            snapshot.forEach(snapshotItem =>{
+
+                let key = snapshotItem.key
+                let data = snapshotItem.val()
+
+                console.log(key)
+                console.log(data)
+
+                this.view.readFiles(data, key)
+            })
+
+
         })
 
     }
