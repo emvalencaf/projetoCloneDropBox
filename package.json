@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/emvalencaf/projetoCloneDropBox.git"
   },
-  "author": "Edson Mota Valença Filho <emvalenca.dev@gmail.com",
+  "author": "Edson Mota Valença Filho <emvalenca.dev@gmail.com>",
   "license": "MIT",
   "bugs":{
     "url":"https://github.com/emvalencaf/projetoCloneDropBox/issues"
