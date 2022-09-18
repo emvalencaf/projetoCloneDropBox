@@ -1,5 +1,5 @@
 import { storage } from "../database/connect.storage.js"
-import { ref, uploadBytesResumable, getMetadata, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-storage.js'
+import { ref, uploadBytesResumable, getMetadata, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-storage.js'
 
 class DropboxStorageService{
 
@@ -24,6 +24,15 @@ class DropboxStorageService{
         }
 
         return uploadBytesResumable(taskRef, task, taskMetadata)
+    }
+//remove task
+
+    removeTask(folder, taskname){
+
+        const refTask = this.getStorageRef(folder,taskname)
+
+        return deleteObject(refTask)
+
     }
 
 //get metadados do arquivo
