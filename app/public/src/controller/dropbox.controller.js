@@ -1,5 +1,6 @@
 import { dropboxView } from "../view/dropbox.view.js"
 import { dropboxDatabaseService } from "../service/dropbox.database.service.js"
+import { dropboxStorageService } from "../service/dropbox.storage.service.js"
 
 
 
@@ -175,13 +176,55 @@ class DropboxController{
 
 //Carrega na máquina (na pasta upload) o arquivo enviado ao front-end e faz o registro dos dados do arquivo no realtime database do firebase
 
-    uploadTask(files){
+    async uploadTask(files){
 
         let promises = []
         files = [...files]
         
         files.forEach(file =>{
+            
+            promises.push(new Promise((resolve, reject) => {
 
+                console.log(file)
+
+                const task = this.service.storage.uploadTask(file, this.currentFolder)
+    
+                task.on(
+
+                    'state_changed',
+
+                    (snapshot) => {
+                        console.log('progress', snapshot)
+                        this.uploadProgress({
+                            loaded: snapshot.bytesTansferred,
+                            total: snapshot.totalBytes
+                        }, file)
+                    },
+
+                    (err)=>{
+                        console.error(err)
+                        reject()
+                    },
+
+                    ()=>{
+                        console.log('sucesso, viado', task)
+                        resolve(task._metadata)
+/*
+                        this.service.storage.getMetadata(this.currentFolder, file.name)
+                        .then(metadata =>{
+                            
+                            resolve(metadata)
+
+                            })
+                            
+                            .catch(err => {
+                                reject(err)
+                            })*/
+                    }
+                )
+                
+            }))
+/*
             let formData = new FormData()
             
             formData.append('input-file', file)
@@ -201,7 +244,7 @@ class DropboxController{
             })
 
             promises.push(promise)
-
+*/
         })
 
         return Promise.all(promises)
@@ -243,7 +286,7 @@ class DropboxController{
         let timeleft = ((100 - porcent) * timespent) / porcent
 
         this.view.uploadProgress({
-            filename: file.name,
+            name: file.name,
             timeleft,
             porcent
         })
@@ -308,4 +351,4 @@ class DropboxController{
 }
 
 
-export const dropboxController = new DropboxController(dropboxView, dropboxDatabaseService)
+export const dropboxController = new DropboxController(dropboxView, dropboxDatabaseService, dropboxStorageService)

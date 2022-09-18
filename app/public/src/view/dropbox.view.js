@@ -52,9 +52,9 @@ class DropboxView{
     uploadProgress(obj){
 
         this.progressBarEl.getElementsByClassName.width = `${obj.porcent}`
-        this.nameFileEl.innerHTML = obj.filename
+        this.nameFileEl.innerHTML = obj.name
         this.timeleftEl.innerHTML = this.formatTimeToHuman(obj.timeleft)
-    
+        this.modalShow(true)
     }
 
     formatTimeToHuman(duration){
@@ -114,7 +114,7 @@ class DropboxView{
 
         li.innerHTML = `
             ${this.getFilesIconView(file)}
-            <div class="name text-center">${file.originalFilename}
+            <div class="name text-center">${file.name}
             </div>
         ` 
 
@@ -196,7 +196,7 @@ class DropboxView{
             switch(file.mimetype){
 
                 case 'folder':
-                    dropboxController.currentFolder.push(file.originalFilename)
+                    dropboxController.currentFolder.push(file.name)
                     console.log(dropboxController.currentFolder.join('/'))
                     dropboxController.openFolder()
                     break
