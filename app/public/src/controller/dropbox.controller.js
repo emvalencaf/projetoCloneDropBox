@@ -266,11 +266,33 @@ class DropboxController{
 
     }
 
+//navegação de pastas
     openFolder(){
 
-        if(this.lastFolder) off(this.getFirebaseRef(this.lastFolder), 'value')        
+        if(this.lastFolder) off(this.getFirebaseRef(this.lastFolder), 'value')
         
+        
+        this.renderNav()
         this.readFiles()
+    }
+
+    renderNav(){
+
+        this.view.renderNav(this.currentFolder)
+
+        this.view.navEl.querySelectorAll('a').forEach(a => {
+
+            a.addEventListener("click", e => {
+
+                e.preventDefault()
+
+                this.currentFolder = a.dataset.path.split('/')
+
+                this.openFolder()
+            })
+
+        })
+
     }
 }
 

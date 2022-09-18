@@ -139,6 +139,51 @@ class DropboxView{
 
 //método relacionado a abertura e leitura de pastas
 
+    renderNav(currentFolder, cb = () => {}){
+
+        let nav = document.createElement('nav')
+        let path = []
+        
+        for(let i = 0; i < currentFolder.length; i++){
+
+            let folderName = currentFolder[i]
+            let span = document.createElement('span')
+
+            path.push(folderName)
+
+            if(i+1 === currentFolder.length){
+
+
+                span.innerHTML = folderName
+
+
+            } else {
+
+                span.className = 'breadcrumb-segment__wrapper'
+                span.innerHTML = `
+                
+                <span class="ue-effect-container uee-BreadCrumbSegment-link-0">
+                    <a href="#" data-path="${path.join('/')}" class="breadcrumb-segment">${folderName}</a>
+                </span>
+                <svg width="24" height="24" viewBox="0 0 24 24" class="mc-icon-template-stateless" style="top: 4px; position: relative;">
+                    <title>arrow-right</title>
+                    <path d="M10.414 7.05l4.95 4.95-4.95 4.95L9 15.534 12.536 12 9 8.464z" fill="#637282"
+                        fill-rule="evenodd"></path>
+                </svg>
+                
+                `
+
+
+                
+            }
+            
+            nav.appendChild(span)
+
+        }
+
+        this.navEl.innerHTML = nav.innerHTML
+
+    }
 
 //Eventos DOM relacionados à aplicação de estilo ao click das <li> que representam os arquivos na máquina e database do firebase
 
