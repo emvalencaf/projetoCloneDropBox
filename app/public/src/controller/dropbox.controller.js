@@ -1,15 +1,17 @@
 import { dropboxView } from "../view/dropbox.view.js"
-import { ref, set, push, onValue, child, remove, off } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
-import { db } from "../database/connect.db.js"
+import { dropboxDatabaseService } from "../service/dropbox.database.service.js"
 
 
 
 class DropboxController{
 
-    constructor(view, service){
+    constructor(view, dbService, storageService){
 
         this.view = view
-        this.service = service
+        this.service = {
+            db: dbService,
+            storage: storageService
+        }
         this.currentFolder = ['username']
         this.lastFolder = ''
 
@@ -25,16 +27,18 @@ class DropboxController{
     initEvents(){
 
         this.view.btnNewFolder.addEventListener('click', e => {
-
+            debugger
             let name = prompt('Digite um nome para uma nova pasta:')
 
             if(!name) return
 
+            this.service.db.createFolder(this.currentFolder, name)
+/*
             set(push(this.getFirebaseRef()), {
                 originalFilename: name,
                 mimetype:'folder',
                 path: this.currentFolder.join('/')
-            })
+            })*/
 
 
         })
@@ -48,7 +52,7 @@ class DropboxController{
 
                     responses.forEach(response => {
 
-                        if(response.fields.key) remove(child(this.getFirebaseRef(), response.fields.key)) 
+                        if(response.fields.key) this.service.db.removeFile(this.currentFolder, response.fields.key)//remove(child(this.getFirebaseRef(), response.fields.key)) 
 
                     })
 
@@ -74,7 +78,7 @@ class DropboxController{
 
             file.originalFilename = name
 
-            set(child(this.getFirebaseRef(), li.dataset.key), file)
+            this.service.db.renameFile(this.currentFolder, li.dataset.key, file)//set(child(this.getFirebaseDBRef(), li.dataset.key), file)
         })
 
         this.view.listFilesEl.addEventListener('selectionchange', e => {
@@ -97,12 +101,13 @@ class DropboxController{
 
             this.uploadTask(evt.target.files)
                 .then(responses => {
-
+/*
                     responses.forEach( response => {
 
                         set(push(this.getFirebaseRef()), response.files['input-file'])
 
-                    })
+                    })*/
+                    this.service.db.uploadTasks(responses, this.currentFolder)
 
                     this.view.uploadComplete()
 
@@ -120,13 +125,13 @@ class DropboxController{
     }
 
 //pega a referência do realtime database do firebase
-
+/*
     getFirebaseRef(path){
 
         if(!path) path = this.currentFolder.join('/')
 
         return ref(db, path)
-    }
+    }*/
 
 //Método para realizar o ajax
 
@@ -249,6 +254,12 @@ class DropboxController{
 
         this.lastFolder = this.currentFolder.join('/')
 
+        this.service.db.readFiles(
+            this.currentFolder,
+            this.view.clearListOfFilesAndDiretories.bind(this.view),
+            this.view.readFiles.bind(this.view)
+        )
+/*
         onValue(this.getFirebaseRef(), snapshot => {
 
             this.view.clearListOfFilesAndDiretories()
@@ -262,14 +273,14 @@ class DropboxController{
             })
 
 
-        })
+        })*/
 
     }
 
 //navegação de pastas
     openFolder(){
 
-        if(this.lastFolder) off(this.getFirebaseRef(this.lastFolder), 'value')
+        if(this.lastFolder) this.service.db.offFolder(this.lastFolder)//off(this.getFirebaseRef(this.lastFolder), 'value')
         
         
         this.renderNav()
@@ -297,4 +308,4 @@ class DropboxController{
 }
 
 
-export const dropboxController = new DropboxController(dropboxView)
+export const dropboxController = new DropboxController(dropboxView, dropboxDatabaseService)
