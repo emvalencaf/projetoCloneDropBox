@@ -8,7 +8,32 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-//method DELETE
+//method GET para abrir arquivos
+
+router.get('/file', (req, res) => {
+
+  let path = req.query.path
+
+  if(!fs.existsSync(path)) return res.status(404).json({err:'File not found'})
+
+  fs.readFile(path, (err, data) => {
+
+    if(err) {
+
+      console.error(err)
+      res.status(400).json({err})
+
+    } else {
+
+      res.status(200).end(data)
+
+    }
+
+  })
+
+})
+
+//method DELETE arquivos no servidor
 
 router.delete('/file', (req, res) => {
 
@@ -23,7 +48,9 @@ router.delete('/file', (req, res) => {
 
     console.log(path)
 
-    if(fs.existsSync(path)) fs.unlink(path, err => {
+    if(!fs.existsSync(path)) return res.status(404).json({err:'File not found'})
+
+    fs.unlink(path, err => {
 
       if(err) return res.status(400).json({err})
 
