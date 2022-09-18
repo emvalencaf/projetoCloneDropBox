@@ -1,5 +1,5 @@
 import { dropboxView } from "../view/dropbox.view.js"
-import { ref, set, push, onValue, child, remove } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
+import { ref, set, push, onValue, child, remove, off } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
 import { db } from "../database/connect.db.js"
 
 
@@ -10,15 +10,36 @@ class DropboxController{
 
         this.view = view
         this.service = service
+        this.currentFolder = ['username']
+        this.lastFolder = ''
 
         this.initEvents()
         this.readFiles()
 
+        console.log(this.currentFolder)
+        this.openFolder()
     }
 
 //inicia os eventos DOM
 
     initEvents(){
+
+        this.view.btnNewFolder.addEventListener('click', e => {
+
+            let name = prompt('Digite um nome para uma nova pasta:')
+
+            if(!name) return
+
+            set(push(this.getFirebaseRef()), {
+                originalFilename: name,
+                mimetype:'folder',
+                path: this.currentFolder.join('/')
+            })
+
+
+        })
+
+        //evento DOM delete
 
         this.view.btnDelete.addEventListener('click', e => {
 
@@ -40,6 +61,8 @@ class DropboxController{
 
         })
 
+        //evento DOM de renomear arquivo
+        
         this.view.btnRename.addEventListener('click', e => {
 
             let li = this.view.getSelection()[0]
@@ -59,6 +82,8 @@ class DropboxController{
             this.view.showMenuOrgOptions()
 
         })
+
+        //evento DOM de enviar arquivo pra realtime database
 
         this.view.btnSendFileEl.addEventListener('click', evt =>{
 
@@ -96,10 +121,11 @@ class DropboxController{
 
 //pega a referência do realtime database do firebase
 
-    getFirebaseRef(){
+    getFirebaseRef(path){
 
-        return ref(db, 'files')
+        if(!path) path = this.currentFolder.join('/')
 
+        return ref(db, path)
     }
 
 //Método para realizar o ajax
@@ -221,6 +247,8 @@ class DropboxController{
 
     readFiles(){
 
+        this.lastFolder = this.currentFolder.join('/')
+
         onValue(this.getFirebaseRef(), snapshot => {
 
             this.view.clearListOfFilesAndDiretories()
@@ -236,6 +264,13 @@ class DropboxController{
 
         })
 
+    }
+
+    openFolder(){
+
+        if(this.lastFolder) off(this.getFirebaseRef(this.lastFolder), 'value')        
+        
+        this.readFiles()
     }
 }
 

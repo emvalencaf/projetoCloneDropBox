@@ -1,4 +1,5 @@
 
+import { dropboxController } from "../controller/dropbox.controller.js"
 import { FormatTime } from "../utils/formatTime.utils.js"
 import { SvgView } from "./svg.view.js"
 
@@ -24,6 +25,9 @@ class DropboxView{
     btnRename = document.querySelector('#btn-rename')
     btnDelete = document.querySelector('#btn-delete')
     
+    //navegaçao de pastas
+    navEl = document.querySelector('#browse-location')
+
     constructor(){
 
         this.btnRename.style.display = 'none'
@@ -128,14 +132,37 @@ class DropboxView{
 
     readFiles(file, key){
 
+        if(!file.mimetype) return
+
         this.listFilesEl.appendChild(this.getFileView(file, key))
     }
+
+//método relacionado a abertura e leitura de pastas
+
 
 //Eventos DOM relacionados à aplicação de estilo ao click das <li> que representam os arquivos na máquina e database do firebase
 
     initEventsLi(li){
 
+        li.addEventListener('dblclick', e => {
 
+            let file = JSON.parse(li.dataset.file)
+
+            switch(file.mimetype){
+
+                case 'folder':
+                    dropboxController.currentFolder.push(file.originalFilename)
+                    console.log(dropboxController.currentFolder.join('/'))
+                    dropboxController.openFolder()
+                    break
+
+                default:
+                    window.open('/file?path=' + file.filepath)
+                    break
+
+            }
+
+        })
 
         li.addEventListener('click', e=>{
 
