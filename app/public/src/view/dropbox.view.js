@@ -202,7 +202,7 @@ class DropboxView{
                     break
 
                 default:
-                    window.open('/file?path=' + file.filepath)
+                    window.open(file.url)
                     break
 
             }

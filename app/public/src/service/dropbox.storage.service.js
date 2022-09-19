@@ -9,8 +9,7 @@ class DropboxStorageService{
 
 //pegar as referências do storage
     getStorageRef(folder, taskname){
-        console.log(folder)
-        console.log(taskname)
+
         if(!folder) return ref(this.storage, taskname)
 
         return ref(this.storage, folder.join("/") + "/" + taskname)
@@ -27,6 +26,7 @@ class DropboxStorageService{
         }
 
         return uploadBytesResumable(taskRef, task, taskMetadata)
+
     }
 //remove task
 
@@ -48,7 +48,6 @@ class DropboxStorageService{
     getTaskDownloadURL(ref){
 
         return getDownloadURL(ref)
-
 
     }
 }

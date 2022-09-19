@@ -113,7 +113,8 @@ class DropboxDatabaseService{
                 name: task.name,
                 originalFilename: task.name,
                 size: task.size,
-                path: task.fullPath
+                path: task.fullPath,
+                url: task.url
             })
 
 

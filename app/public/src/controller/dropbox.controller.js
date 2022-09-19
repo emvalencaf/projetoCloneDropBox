@@ -19,7 +19,6 @@ class DropboxController{
         this.initEvents()
         this.readFiles()
 
-        console.log(this.currentFolder)
         this.openFolder()
     }
 
@@ -175,7 +174,7 @@ class DropboxController{
 
     }
 
-//Carrega na máquina (na pasta upload) o arquivo enviado ao front-end e faz o registro dos dados do arquivo no realtime database do firebase
+//Carrega o arquivo enviado ao front-end no storage do firebase e faz o registro dos dados do arquivo no realtime database do firebase
 
     uploadTask(files){
 
@@ -209,7 +208,14 @@ class DropboxController{
 
                     ()=>{
 
-                        resolve(task._metadata)
+                        this.service.storage.getTaskDownloadURL(task.snapshot.ref)
+                            .then((downloadURL) =>{
+                                task._metadata.url = downloadURL
+                                console.log('url do download disponível:', task._metadata.url)
+
+                                resolve(task._metadata)
+                            })
+
 /*
                         this.service.storage.getMetadata(this.currentFolder, file.name)
                         .then(metadata =>{
