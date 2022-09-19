@@ -14,13 +14,19 @@ O foco do projeto foi apenas as funcionalidades relacionadas ao upload no realti
 
 - [x] Criação de pastas no realtime db do firebase por meio do path;
 - [x] Renderização na View por meio do path das pastas;
-- [x] Upload de arquivos na pasta ./upload da raiz do servidor sincronizado ao POST ao realtime db do firebase que faz a coordenação destes arquivos;
-- [x] Rename de arquivos na pasta ./upload da raiz do servidor e atualização aos dados relativos a ele no realtime db do firebase;
+- [x] Upload de arquivos armazenados no serviço cloud do storage firebase sincronizado ao realtime db do firebase que faz a coordenação destes arquivos;
+- [x] Rename de arquivos registrados no realtime db do firebase;
 - [x] Rename de pastas no realtime db do firebase;
-- [x] Delete de arquivos na pasta ./upload da raiz do servidor e dos dados relacionados a ele no realtime db do firebase;
+- [x] Delete de arquivos armazenados no serviço cloud do storage firebase e dos dados relacionados a ele no realtime db do firebase;
 - [x] Delete de pastas no realtime db do firebase;
 - [x] navegação, por meio do elemento <a>, nas pastas registradas no realtime db do firebase;
-- [x] abrir ou fazer o download dos arquivos na pasta ./upload da raiz do servidor.
+- [x] abrir ou fazer o download dos arquivos armazenados no serviço cloud do storage.
+
+### observações
+
+O storage do serviço firebase não possui um método nativo para edição dos arquivos armazenados lá. Portanto, optou-se por não implementar uma função similar a deletar o arquivo com o nome antigo e fazer seu upload, logo em seguida, com o nome novo para não consumir banda. A edição do nome ficou apenas na superfície dos dados no realtime database.
+
+No storage os arquivos permanecem com seu nome original.
 
 ## Desafios
 
@@ -38,18 +44,18 @@ Foram dois os principais desafios para este projeto:
 4. Crie no diretório `app/public/src/firebase` um arquivo `config.firebase.js` e declare um objeto com as configurações do firebaseconfig, por exemplo (preencha todos os atributos de acordo com o firebaseConfig gerado para a sua aplicação):
 ```
     export const firebaseConfig = {
-    apiKey: "",
-    authDomain: "",
-    databaseURL: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: "",
-    measurementId: ""
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+        measurementId: ""
     }
 ```
 5. Por fim, execute o comando: `npm start`.
 
-### Breves considerações
+## Breves considerações quanto ao modelo de projeto desenvolvido
 
-Ao ser implementada a classe Service DB foi adotado o modelo de projeto Repository separando da classe Controller a responsabilidade for fazer requisições ao realtime db do firebase.
+Ao ser implementada a classe Service DB e Storage foi adotado o modelo de projeto Repository separando da classe Controller a responsabilidade for fazer requisições ao realtime db e storage do firebase.
