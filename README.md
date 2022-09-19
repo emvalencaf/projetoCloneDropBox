@@ -1,6 +1,6 @@
 # projetoCloneDropBox
 
-[EM DESENVOLVIMENTO] Projeto clone do Dropbox desenvolvido durante o [curso dde javascrip da HCode disponível na Udemy](https://www.udemy.com/course/javascript-curso-completo/), segue o [repositório original](https://github.com/hcodebr/curso-javascript-projeto-dropbox-clone) já com o HTML e CSS desenvolvidos.
+Projeto clone do Dropbox desenvolvido durante o [curso dde javascrip da HCode disponível na Udemy](https://www.udemy.com/course/javascript-curso-completo/), segue o [repositório original](https://github.com/hcodebr/curso-javascript-projeto-dropbox-clone) já com o HTML e CSS desenvolvidos.
 
 ## Sobre o projeto passado
 
