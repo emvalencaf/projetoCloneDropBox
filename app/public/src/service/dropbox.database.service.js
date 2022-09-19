@@ -18,6 +18,7 @@ class DropboxDatabaseService{
 
         set(push(this.getFirebaseRef(undefined, folder)), {
             name: foldername,
+            originalFilename: foldername,
             mimetype:'folder',
             path: folder.join('/')
         })
@@ -45,6 +46,7 @@ class DropboxDatabaseService{
                 
                 mimetype: task.contentType,
                 name: task.name,
+                originalFilename: task.name,
                 size: task.size,
                 path: task.fullPath
             })

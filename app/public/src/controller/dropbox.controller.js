@@ -47,7 +47,7 @@ class DropboxController{
         //evento DOM delete
 
         this.view.btnDelete.addEventListener('click', e => {
-
+            debugger
             this.removeTasks()
                 .then(responses=> {
 
@@ -73,13 +73,14 @@ class DropboxController{
             let li = this.view.getSelection()[0]
             let file = JSON.parse(li.dataset.file)
 
-            let name = prompt("Renomear o arquivo:", file.originalFilename)
-
+            let name = prompt("Renomear o arquivo:", file.name)
+            
             if(!name) return
 
-            file.originalFilename = name
+            file.name = name
 
             this.service.db.renameFile(this.currentFolder, li.dataset.key, file)//set(child(this.getFirebaseDBRef(), li.dataset.key), file)
+            
         })
 
         this.view.listFilesEl.addEventListener('selectionchange', e => {
@@ -267,7 +268,7 @@ class DropboxController{
 
             promises.push(new Promise((resolve, reject) => {
 
-                this.service.storage.removeTask(this.currentFolder, file.name)
+                this.service.storage.removeTask(this.currentFolder, file.originalFilename)
                     .then(()=>{
 
                         resolve({fields:{key}})
