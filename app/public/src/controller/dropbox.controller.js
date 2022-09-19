@@ -208,7 +208,7 @@ class DropboxController{
                     },
 
                     ()=>{
-                        console.log('sucesso, viado', task)
+
                         resolve(task._metadata)
 /*
                         this.service.storage.getMetadata(this.currentFolder, file.name)
@@ -270,13 +270,11 @@ class DropboxController{
             let file = JSON.parse(li.dataset.file)
             let key = li.dataset.key
 
-            promises.push(new Promise(async (resolve, reject) => {
+            promises.push(new Promise((resolve, reject) => {
 
                 if(file.mimetype === 'folder'){
 
-                    await this.removeFolderTask(this.currentFolder, file.originalFilename, key)
-
-                    this.service.db.removeFile(this.currentFolder, key)
+                    this.removeFolderTask(this.currentFolder, file.originalFilename, key)
 
                 } else if(file.mimetype){
 

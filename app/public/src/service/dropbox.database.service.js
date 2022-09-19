@@ -34,16 +34,16 @@ class DropboxDatabaseService{
             console.log(folderRef)
             onValue(folderRef, snapshot =>{
     
-                this.offFolder(undefined, folderRef)
 
                 snapshot.forEach(item => {
-
+                    console.log(item)
                     let data = item.val()
                     data.key = item.key
-
+                    this.offFolder(undefined, folderRef)
+                    
                     if(data.mimetype === 'folder'){
-    
-                        this.removeFolderTask(folder + "/" + folderFilename, data.originalFilename)
+                        
+                        this.removeFolderTask(folder + "/" + folderFilename, data.originalFilename, key)
                             .then(()=>{
 
                                 resolve({
@@ -79,7 +79,7 @@ class DropboxDatabaseService{
                         
                         
                     })
-
+                    
                     remove(folderRef)
                     
                 })
