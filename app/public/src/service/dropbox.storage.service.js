@@ -9,6 +9,9 @@ class DropboxStorageService{
 
 //pegar as referências do storage
     getStorageRef(folder, taskname){
+        console.log(folder)
+        console.log(taskname)
+        if(!folder) return ref(this.storage, taskname)
 
         return ref(this.storage, folder.join("/") + "/" + taskname)
     
@@ -28,7 +31,7 @@ class DropboxStorageService{
 //remove task
 
     removeTask(folder, taskname){
-
+        
         const refTask = this.getStorageRef(folder,taskname)
 
         return deleteObject(refTask)

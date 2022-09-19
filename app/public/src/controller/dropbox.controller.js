@@ -28,7 +28,7 @@ class DropboxController{
     initEvents(){
 
         this.view.btnNewFolder.addEventListener('click', e => {
-            debugger
+
             let name = prompt('Digite um nome para uma nova pasta:')
 
             if(!name) return
@@ -47,7 +47,7 @@ class DropboxController{
         //evento DOM delete
 
         this.view.btnDelete.addEventListener('click', e => {
-            debugger
+
             this.removeTasks()
                 .then(responses=> {
 
@@ -177,7 +177,7 @@ class DropboxController{
 
 //Carrega na máquina (na pasta upload) o arquivo enviado ao front-end e faz o registro dos dados do arquivo no realtime database do firebase
 
-    async uploadTask(files){
+    uploadTask(files){
 
         let promises = []
         files = [...files]
@@ -252,12 +252,16 @@ class DropboxController{
     }
 
 //Remove do banco de dados e do sistema o arquivo
+    removeFolderTask(folder, folderFilename, key){
+
+        return this.service.db.removeFolderTask(folder.join('/'), folderFilename, this.service.storage.removeTask.bind(this.service.storage), key)
+
+    }
 
     removeTasks(){
 
         let promises = []
 
-        console.log("dentro do removeTasks")
 
         this.view.getSelection().forEach(li => {
 
@@ -266,20 +270,31 @@ class DropboxController{
             let file = JSON.parse(li.dataset.file)
             let key = li.dataset.key
 
-            promises.push(new Promise((resolve, reject) => {
+            promises.push(new Promise(async (resolve, reject) => {
 
-                this.service.storage.removeTask(this.currentFolder, file.originalFilename)
-                    .then(()=>{
+                if(file.mimetype === 'folder'){
 
-                        resolve({fields:{key}})
+                    await this.removeFolderTask(this.currentFolder, file.originalFilename, key)
 
-                    })
-                    .catch(err=>{
+                    this.service.db.removeFile(this.currentFolder, key)
 
-                        console.error(err)
-                        reject(err)
+                } else if(file.mimetype){
 
-                    })
+                    this.service.storage.removeTask(this.currentFolder, file.originalFilename)
+                        .then(()=>{
+    
+                            resolve({fields:{key}})
+    
+                        })
+                        .catch(err=>{
+    
+                            console.error(err)
+                            reject(err)
+    
+                        })   
+                    
+                }
+                
 
             }))
 /*

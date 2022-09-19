@@ -1,6 +1,7 @@
 import { db } from "../database/connect.db.js"
 import { ref, set, push, onValue, child, remove, off } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
 
+
 class DropboxDatabaseService{
 
     constructor(db){
@@ -25,7 +26,71 @@ class DropboxDatabaseService{
 
     }
 
+    removeFolderTask(folder, folderFilename, storageRemove = ()=>{}, key){
+        return new Promise((resolve, reject) => {
+
+            let folderRef = this.getFirebaseRef(folder + "/" + folderFilename)
+            console.log(folder + "/" + folderFilename)
+            console.log(folderRef)
+            onValue(folderRef, snapshot =>{
+    
+                this.offFolder(undefined, folderRef)
+
+                snapshot.forEach(item => {
+
+                    let data = item.val()
+                    data.key = item.key
+
+                    if(data.mimetype === 'folder'){
+    
+                        this.removeFolderTask(folder + "/" + folderFilename, data.originalFilename)
+                            .then(()=>{
+
+                                resolve({
+                                    fields:{key: data.key}
+                                })
+
+                            })
+                            .catch(err=>{
+
+                                console.error(err)
+
+                            })
+    
+                    } else if(data.mimetype){
+                        console.log(storageRemove)
+                        storageRemove(undefined, data.path)
+                            .then(()=>{
+
+                                resolve({
+                                    fields: {key: data.key}
+                                })
+                                
+                            })
+                            
+                            .catch(err => {
+                                
+                                console.error(err)
+                                reject(err)
+                                
+                            })
+                            
+                        }
+                        
+                        
+                    })
+
+                    remove(folderRef)
+                    
+                })
+            
+        })
+
+    }
+
     removeFile(folder, key){
+
+        const path = child(this.getFirebaseRef(undefined, folder), key)
 
         remove(child(this.getFirebaseRef(undefined, folder), key)) 
 
@@ -75,10 +140,11 @@ class DropboxDatabaseService{
 
     }
 
-    offFolder(path){
+    offFolder(path, folderRef){
 
-        off(this.getFirebaseRef(path), 'value')
+        if(!folderRef) return off(this.getFirebaseRef(path), 'value')
 
+        off(folderRef, 'value')
     }
 
 }
