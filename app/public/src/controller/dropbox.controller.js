@@ -185,10 +185,9 @@ class DropboxController{
             
             promises.push(new Promise((resolve, reject) => {
 
-                console.log(file)
-
                 const task = this.service.storage.uploadTask(file, this.currentFolder)
     
+                this.startUploadTime = Date.now()
                 task.on(
 
                     'state_changed',
@@ -196,7 +195,7 @@ class DropboxController{
                     (snapshot) => {
                         console.log('progress', snapshot)
                         this.uploadProgress({
-                            loaded: snapshot.bytesTansferred,
+                            loaded: snapshot.bytesTransferred,
                             total: snapshot.totalBytes
                         }, file)
                     },
@@ -211,7 +210,6 @@ class DropboxController{
                         this.service.storage.getTaskDownloadURL(task.snapshot.ref)
                             .then((downloadURL) =>{
                                 task._metadata.url = downloadURL
-                                console.log('url do download disponível:', task._metadata.url)
 
                                 resolve(task._metadata)
                             })
@@ -319,7 +317,7 @@ class DropboxController{
         let timespent = Date.now() - this.startUploadTime
         let loaded = evt.loaded
         let total = evt.total
-        let porcent = parseInt((loaded/total) * 100)
+        let porcent = parseInt((loaded / total) * 100)
         let timeleft = ((100 - porcent) * timespent) / porcent
 
         this.view.uploadProgress({

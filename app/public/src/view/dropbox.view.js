@@ -37,7 +37,7 @@ class DropboxView{
 //renderizam no front-end o progresso da barra de upload dos arquivos
     modalShow(show = true){
 
-        this.snackModalEl.getElementsByClassName.display = (show)? "block":"none"
+        this.snackModalEl.style.display = (show)? "block":"none"
 
     }
 
@@ -51,7 +51,7 @@ class DropboxView{
 
     uploadProgress(obj){
 
-        this.progressBarEl.getElementsByClassName.width = `${obj.porcent}`
+        this.progressBarEl.style.width = `${obj.porcent}%`
         this.nameFileEl.innerHTML = obj.name
         this.timeleftEl.innerHTML = this.formatTimeToHuman(obj.timeleft)
         this.modalShow(true)
