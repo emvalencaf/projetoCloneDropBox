@@ -1,4 +1,4 @@
-import { db } from "../database/connect.db.js"
+import { db } from "../firebase/database/connect.db.js"
 import { ref, set, push, onValue, child, remove, off } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
 
 

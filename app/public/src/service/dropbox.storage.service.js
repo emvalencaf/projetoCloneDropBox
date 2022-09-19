@@ -1,4 +1,4 @@
-import { storage } from "../database/connect.storage.js"
+import { storage } from "../firebase/storage/connect.storage.js"
 import { ref, uploadBytesResumable, getMetadata, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-storage.js'
 
 class DropboxStorageService{
