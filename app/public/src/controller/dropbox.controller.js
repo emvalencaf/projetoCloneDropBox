@@ -274,11 +274,13 @@ class DropboxController{
             let file = JSON.parse(li.dataset.file)
             let key = li.dataset.key
 
-            promises.push(new Promise((resolve, reject) => {
+            promises.push(new Promise(async (resolve, reject) => {
 
                 if(file.mimetype === 'folder'){
 
-                    this.removeFolderTask(this.currentFolder, file.originalFilename, key)
+                    await this.removeFolderTask(this.currentFolder, file.originalFilename, key)
+
+                    this.service.db.removeFile(this.currentFolder, key)
 
                 } else if(file.mimetype){
 
