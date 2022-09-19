@@ -209,7 +209,7 @@ class DropboxView{
 
         })
 
-        li.addEventListener('click', e=>{
+        li.addEventListener('click', e =>{
 
             
             if(e.shiftKey) {
@@ -247,12 +247,15 @@ class DropboxView{
 
             }
 
-            if(!e.ctrlKey) this.listFilesEl.querySelectorAll("li.selected").forEach( el =>{
+            if(!e.ctrlKey) {
+                this.listFilesEl.querySelectorAll("li.selected").forEach( el =>{
 
                     el.classList.remove('selected')
 
                 })
 
+            }
+            
             li.classList.toggle('selected')
             
             this.listFilesEl.dispatchEvent(this.onSelectionChange)
