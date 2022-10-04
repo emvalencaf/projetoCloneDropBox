@@ -40,7 +40,7 @@ Foram dois os principais desafios para este projeto:
 
 1. Abrir o terminal na pasta app e execute o comando: `npm i bower`;
 2. Após terminada a instalação do bower, execute o comando: `npm install`;
-3. Crie [um app no firebase](https://firebase.google.com/) e habilite seu aplicativo para os serviços [realtime database](https://firebase.google.com/docs/database/web/start) e [storage]()seguindo [essas instruções](https://firebase.google.com/docs/storage/web/start);
+3. Crie [um app no firebase](https://firebase.google.com/) e habilite seu aplicativo para os serviços [realtime database](https://firebase.google.com/docs/database/web/start) e [storage](https://firebase.google.com/docs/storage/web/start) seguindo [essas instruções](https://firebase.google.com/docs/storage/web/start);
 4. Crie no diretório `app/public/src/firebase` um arquivo `config.firebase.js` e declare um objeto com as configurações do firebaseconfig, por exemplo (preencha todos os atributos de acordo com o firebaseConfig gerado para a sua aplicação):
 ```
     export const firebaseConfig = {
